@@ -1,0 +1,4 @@
+name: dev
+variables:
+  - name: base_uri
+    value: http://localhost:8080

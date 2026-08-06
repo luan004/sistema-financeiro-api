@@ -1,0 +1,21 @@
+info:
+  name: Criar conta
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{base_uri}}/accounts"
+  body:
+    type: json
+    data: |-
+      {
+        "description": "teste"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
