@@ -34,9 +34,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         String token = request.getHeader("Authorization");
 
-        if (token != null) {
-            
-            Optional<Session> sessionOptional = repo.findByToken(token);
+        if (token != null && token.startsWith("Bearer ")) {
+            String rawToken = token.substring(7).trim();
+
+            Optional<Session> sessionOptional = repo.findByToken(rawToken);
 
             if (sessionOptional.isPresent()) {
                 Session session = sessionOptional.get();

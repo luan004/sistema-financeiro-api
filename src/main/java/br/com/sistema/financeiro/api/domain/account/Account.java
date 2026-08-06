@@ -35,14 +35,13 @@ public class Account {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "account_users",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+        name = "account_users",
+        joinColumns = @JoinColumn(name = "account_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> users = new HashSet<>();
 
-    protected Account() {
-    }
+    protected Account() {}
 
     public Account(String description) {
         this.description = description;
