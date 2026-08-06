@@ -4,8 +4,10 @@ import br.com.sistema.financeiro.api.domain.DomainException;
 import br.com.sistema.financeiro.api.domain.movement.Movement;
 import br.com.sistema.financeiro.api.domain.movement.MovementRepository;
 import br.com.sistema.financeiro.api.domain.user.User;
+import br.com.sistema.financeiro.api.infraestructure.rest.PaginationParams;
 import br.com.sistema.financeiro.api.infraestructure.rest.security.AuthenticatedUser;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -49,12 +52,19 @@ public class MovementController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<List<MovementResponse>> list(@AuthenticatedUser User user) {
+    public ResponseEntity<List<MovementResponse>> list(
+        @RequestParam(required = false) Integer page,
+        @RequestParam(required = false) Integer limit,
+        @AuthenticatedUser User user
+    ) {
         if (user == null) {
             throw new DomainException("Authorization header required");
         }
 
-        List<MovementResponse> movements = movementRepository.findByCreator_Id(user.getId()).stream()
+        PaginationParams pagination = PaginationParams.require(page, limit);
+        Page<Movement> movementsPage = movementRepository.findByCreator_Id(user.getId(), pagination.toPageable());
+
+        List<MovementResponse> movements = movementsPage.getContent().stream()
                 .map(MovementResponse::from)
                 .toList();
         return ResponseEntity.ok(movements);
