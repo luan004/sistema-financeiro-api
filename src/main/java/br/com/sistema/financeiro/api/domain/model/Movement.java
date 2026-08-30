@@ -35,6 +35,10 @@ public class Movement {
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
     @NotBlank
     @Column(nullable = false, length = 500)
     private String description;
@@ -46,8 +50,9 @@ public class Movement {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public Movement(User creator, String description, BigDecimal amount) {
+    public Movement(User creator, Account account, String description, BigDecimal amount) {
         this.creator = creator;
+        this.account = account;
         this.description = description;
         this.amount = amount;
     }

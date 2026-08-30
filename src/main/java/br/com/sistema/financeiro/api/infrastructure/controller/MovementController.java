@@ -8,6 +8,7 @@ import br.com.sistema.financeiro.api.domain.model.Movement;
 import br.com.sistema.financeiro.api.domain.model.User;
 import br.com.sistema.financeiro.api.infrastructure.security.AuthenticatedUser;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +46,7 @@ public class MovementController {
 
     @PostMapping
     public ResponseEntity<Movement> create(@Valid @RequestBody MovementRequest request, @AuthenticatedUser User user) {
-        Movement movement = createMovement.execute(user, request.description(), request.amount());
+        Movement movement = createMovement.execute(user, request.accountId(), request.description(), request.amount());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(movement);
     }
@@ -71,5 +72,5 @@ public class MovementController {
         return ResponseEntity.noContent().build();
     }
 
-    public record MovementRequest(String description, BigDecimal amount) {}
+    public record MovementRequest(@NotNull(message = "A conta é obrigatória.") Long accountId, String description, BigDecimal amount) {}
 }
