@@ -11,27 +11,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DeleteAccountUseCase {
 
-    private final AccountRepository repository;
+    private final AccountRepository accountRepository;
     private final MovementRepository movementRepository;
 
-    public DeleteAccountUseCase(AccountRepository repository, MovementRepository movementRepository) {
-        this.repository = repository;
+    public DeleteAccountUseCase(AccountRepository accountRepository, MovementRepository movementRepository) {
+        this.accountRepository = accountRepository;
         this.movementRepository = movementRepository;
     }
 
     @Transactional
     public void execute(Long id, User user) {
-        Account account = repository.findById(id)
+        Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new DomainException("Conta não encontrada."));
 
         if (!account.isOwnedBy(user)) {
             throw new DomainException("Você não tem acesso a esta conta.");
         }
 
-        if (movementRepository.existsByAccount_Id(account.getId())) {
+        if (movementRepository.existsByAccount_Id(id)) {
             throw new DomainException("Não é possível excluir uma conta que possui movimentações associadas.");
         }
 
-        repository.delete(account);
+        accountRepository.delete(account);
     }
 }
