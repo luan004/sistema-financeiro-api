@@ -76,7 +76,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String method = request.getMethod();
+        String uri = request.getRequestURI();
         return "OPTIONS".equalsIgnoreCase(method)
-            || request.getRequestURI().equals("/login");
+            || uri.equals("/login")
+            || uri.equals("/register");
     }
 }
