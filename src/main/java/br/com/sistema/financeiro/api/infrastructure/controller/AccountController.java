@@ -4,11 +4,14 @@ import br.com.sistema.financeiro.api.application.usecase.account.CreateAccountUs
 import br.com.sistema.financeiro.api.application.usecase.account.DeleteAccountUseCase;
 import br.com.sistema.financeiro.api.application.usecase.account.GetAccountUseCase;
 import br.com.sistema.financeiro.api.application.usecase.account.ListAccountUseCase;
+import br.com.sistema.financeiro.api.application.usecase.account.ShareAccountUseCase;
 import br.com.sistema.financeiro.api.application.usecase.account.UpdateAccountUseCase;
 import br.com.sistema.financeiro.api.domain.model.Account;
 import br.com.sistema.financeiro.api.domain.model.User;
 import br.com.sistema.financeiro.api.infrastructure.security.AuthenticatedUser;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,19 +35,22 @@ public class AccountController {
     private final ListAccountUseCase listAccount;
     private final UpdateAccountUseCase updateAccount;
     private final DeleteAccountUseCase deleteAccount;
+    private final ShareAccountUseCase shareAccount;
 
     public AccountController(
         CreateAccountUseCase createAccount,
         GetAccountUseCase getAccount,
         ListAccountUseCase listAccount,
         UpdateAccountUseCase updateAccount,
-        DeleteAccountUseCase deleteAccount
+        DeleteAccountUseCase deleteAccount,
+        ShareAccountUseCase shareAccount
     ) {
         this.createAccount = createAccount;
         this.getAccount = getAccount;
         this.listAccount = listAccount;
         this.updateAccount = updateAccount;
         this.deleteAccount = deleteAccount;
+        this.shareAccount = shareAccount;
     }
 
     @PostMapping
@@ -82,5 +88,22 @@ public class AccountController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/share")
+    public ResponseEntity<Void> share(
+        @PathVariable Long id,
+        @Valid @RequestBody ShareAccountRequest request,
+        @AuthenticatedUser User user
+    ) {
+        shareAccount.execute(id, user, request.email());
+
+        return ResponseEntity.noContent().build();
+    }
+
     public record AccountRequest(String description) {}
+
+    public record ShareAccountRequest(
+        @NotBlank(message = "O email é obrigatório.")
+        @Email(message = "O email deve ser válido.")
+        String email
+    ) {}
 }

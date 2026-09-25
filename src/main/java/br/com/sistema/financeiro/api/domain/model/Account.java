@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -43,6 +44,11 @@ public class Account {
     private LocalDateTime createdAt;
 
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "account_users",
@@ -58,6 +64,11 @@ public class Account {
         this.description = description;
     }
 
+    public Account(String description, User owner) {
+        this.description = description;
+        this.owner = owner;
+    }
+
     @PrePersist
     void prePersist() {
         this.createdAt = LocalDateTime.now();
@@ -69,5 +80,9 @@ public class Account {
 
     public boolean isOwnedBy(User user) {
         return this.users.stream().anyMatch(existingUser -> existingUser.getId().equals(user.getId()));
+    }
+
+    public boolean isCreatedBy(User user) {
+        return this.owner != null && this.owner.getId().equals(user.getId());
     }
 }

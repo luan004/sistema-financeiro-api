@@ -17,7 +17,7 @@ public class CreateAccountUseCase {
 
     @Transactional
     public Account execute(User user, String description) {
-        Account account = new Account(description);
+        Account account = new Account(description, user);
         account.addUser(user);
 
         return repository.save(account);
