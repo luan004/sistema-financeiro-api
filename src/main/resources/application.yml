@@ -4,10 +4,10 @@ spring:
   jackson:
     default-property-inclusion: non_null
   datasource:
-    url: jdbc:mysql://localhost:3306/sistema_financeiro?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: ${DB_URL:jdbc:mysql://localhost:3306/sistema_financeiro?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: "Luan!130904"
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,6 +17,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
 server:
-  port: 8080
+  port: ${PORT:8080}
   servlet:
     context-path: /
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
